@@ -66,6 +66,12 @@ describe('AliyunAdapter', () => {
       userId: 'test-user',
       username: '测试用户',
     })
+    expect(port.headerRules.add).toHaveBeenCalledWith({
+      urlFilter: '*://developer.aliyun.com/developer/api/*',
+      headers: { Origin: origin, Referer: `${origin}/article/new` },
+      resourceTypes: ['xmlhttprequest'],
+    })
+    expect(port.headerRules.remove).toHaveBeenCalledWith('rule-test')
   })
 
   it('未登录时不创建草稿', async () => {

@@ -39,6 +39,10 @@ export class AliyunAdapter extends CodeAdapter {
   ]
 
   async checkAuth(): Promise<AuthResult> {
+    return this.withAliyunHeaders(() => this.checkAuthRequest())
+  }
+
+  private async checkAuthRequest(): Promise<AuthResult> {
     try {
       const user = await this.requestJson<{
         uccId: string | number
@@ -59,7 +63,8 @@ export class AliyunAdapter extends CodeAdapter {
 
   async publish(article: Article, options?: PublishOptions): Promise<SyncResult> {
     return this.withAliyunHeaders(async () => {
-      if (!(await this.checkAuth()).isAuthenticated) throw new Error('请先登录阿里云开发者社区')
+      if (!(await this.checkAuthRequest()).isAuthenticated)
+        throw new Error('请先登录阿里云开发者社区')
       // 每次读取当前编辑页配置，避免登录变化后复用旧 CSRF。
       const csrf = await this.getCsrfConfig()
       const content = await uploadMarkdownImages(
